@@ -1,12 +1,14 @@
 package ru.example.sweater.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.example.sweater.domain.Message;
+import ru.example.sweater.domain.User;
 import ru.example.sweater.repos.MessageRepo;
 
 import java.util.List;
@@ -34,10 +36,12 @@ public class MainController {
     }
 
     @PostMapping("/main")
-    public String addMessage(@RequestParam String text,
-                             @RequestParam String tag,
-                             Map<String, Object> model) {
-        Message message = new Message(text, tag);
+    public String addMessage(
+            @AuthenticationPrincipal User user,
+            @RequestParam String text,
+            @RequestParam String tag,
+            Map<String, Object> model) {
+        Message message = new Message(text, tag, user);
         messageRepo.save(message);
 
         Iterable<Message> messages = messageRepo.findAll();
